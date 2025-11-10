@@ -2,7 +2,6 @@
 #Create hourly profiles that capture different heating patterns within a house 
 #across one year of operation.
 #can be found here: https://beta.ukdataservice.ac.uk/datacatalogue/studies/study?id=8151&type=Data%20catalogue#!/details
-#data are safeguarded - you might need to obtain a licence
 
 library(tidyverse)
 library(lubridate)
@@ -10,7 +9,7 @@ library(cluster)
 library(factoextra)
 library(mclust)
 
-hp<-read.csv(file = "C:/Users/ucbqdma/OneDrive - University College London/Documents/ESDA/ESDA Module 24-25/Tutorials/Tutorial 4/processed_rhpp5132.csv")
+hp<-read.csv(file = "heat_pump_data.csv")
 #there is no timestamp (date-time) in the raw data so I will create one.
 #I will also create a Date column, as well as a weekday
 hp$Date <- make_date(year = hp$Year, month = hp$Month, day =hp$Day)
@@ -24,7 +23,7 @@ sum(is.na (hp$Ehp))#zero NAs
 length(unique(hp$dt))#all date-times are unique-no duplicates
 
 
-##Check coverage with some summaries!
+##Check coverage with some summaries
 hp_cov <- hp %>% group_by(Month) %>% summarise(total = n())%>% spread(Month, total)
 hp_cov2 <- hp %>% group_by(weekday) %>% summarise(total = n()) %>% spread(weekday, total)
 
@@ -239,4 +238,5 @@ clusters_wday2
 
 #create contigency table for months
 t(table(df_long2[,c(2,6)])/24)#t returns the transpose
+
 
