@@ -1,10 +1,10 @@
 #PCA Using heat pump data for 1 year, every 2 minutes
-#we are working with the house code 5132 from the dataset
+#working with the house code 5132 from the dataset
 library(tidyverse)
 library(lubridate)
 library(factoextra)
 
-hp<-read.csv(file = "C:/Users/ucbqdma/OneDrive - University College London/Documents/New SEBE MSc/Data analytics in the smart built environment module/Data and R Tutorials/Heat Pump data UK/processed_rhpp5132.csv")
+hp<-read.csv(file = "heat_pump_data.csv")
 
 hp$Date <- make_date(year = hp$Year, month = hp$Month, day =hp$Day)
 hp$dt <- make_datetime(year = hp$Year, month = hp$Month, day = hp$Day, hour = hp$Hour, min = hp$Minute)
@@ -32,7 +32,7 @@ ggplot(hp_sum)+
   theme_bw()
 
 
-#back to our original data. we need to transform to wide to perform PCA
+#back to original data. need to transform to wide to perform PCA
 #every column/feature should be a time in the day and every row should be a date
 #I will also aggregate to hourly values!
 sum(is.na (hp$Ehp))#zero NAs
@@ -51,9 +51,9 @@ hp_Wide<-na.omit(hp_Wide)#exclude them
 #PCA
 pca <- prcomp(hp_Wide[,2:25],center=FALSE, scale=FALSE)#a base R function! we could have set scale=TRUE too
 #But we would not be able to reproduce the graphs.
-#I would normally scale and center here. Remember PCA requires numerical features to
-#be scaled. Here, I only have electricity values for 1 house, so kind of OK if I don't scale.
-#I also just don't want to lose the original consumption values in this case, as I also want to plot them.
+#would normally scale and center here. PCA requires numerical features to
+#be scaled. Here, I only have electricity values for 1 house, so OK not to scale.
+#also don't want to lose the original consumption values in this case, as I also want to plot them.
 summary(pca)
 
 #our components are sorted from largest to smallest with regards to their standard deviation
@@ -104,7 +104,7 @@ hp_pca_long$hour <- as.integer(hp_pca_long$hour)
 
 head(hp_pca_long)
 
-#I will only plot the 4 random dates I chose earlier, to see how similar the daily
+#will only plot the 4 random dates I chose earlier, to see how similar the daily
 #patterns are to the ones we produced using our original raw data
 hp_pca_long_red<-hp_pca_long[hp_pca_long$Date %in% random_dates, ]
 hp_pca_long_red$Date<-as.factor(hp_pca_long_red$Date)
@@ -115,8 +115,7 @@ ggplot(hp_pca_long_red)+
   theme_bw()
 
 
-#compare the plot with the one we got from our original data! we have achieved a good
+#compare the plot with the one from original data - achieved a good
 # representation of the variability in our data, with only 2 features, instead of 24!
 
-#try using 3 PCs to see if graphs are more similar to the original ones 
-#(hint: they will be!)
+
